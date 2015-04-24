@@ -7,6 +7,9 @@
 #   rbeapi rubygem installed
 #   eAPI configured
 #     Defaults to unix-sockets, if EOS 4.14.5F or newer
+# Optional:
+#   git extension (requires git and 8 perl RPMs)
+#
  
 # May need this if using pe-puppet
 export PATH=/opt/puppet/bin:${PATH}
