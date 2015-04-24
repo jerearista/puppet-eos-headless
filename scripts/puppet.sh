@@ -10,6 +10,10 @@
  
 # May need this if using pe-puppet
 export PATH=/opt/puppet/bin:${PATH}
+
+# What and where am I?
+SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
+SCRIPT=$SCRIPTPATH/$(basename $0)
  
 #
 # Where will we store the local copy?
@@ -65,5 +69,5 @@ puppet apply ${PUPPETDIR}/manifests/default.pp --modulepath ${PUPPETDIR}/modules
 # To self-add this to the scheduler, uncomment the following
 #
 #FastCli -p 15 -c "configure t
-#schedule puppet interval 30 max-log-files 1 command bash ${PUPPETDIR}/scripts/puppet.sh
+#schedule puppet interval 30 max-log-files 1 command bash ${SCRIPT}
 #end"
