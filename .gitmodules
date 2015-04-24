@@ -1,3 +1,9 @@
 [submodule "modules/eos"]
 	path = modules/eos
 	url = https://github.com/arista-eosplus/puppet-eos.git
+[submodule "modules/netdev_stdlib_eos"]
+	path = modules/netdev_stdlib_eos
+	url = https://github.com/arista-eosplus/puppet-netdev.git
+[submodule "modules/netdev_stdlib"]
+	path = modules/netdev_stdlib
+	url = https://github.com/puppetlabs/netdev_stdlib.git
