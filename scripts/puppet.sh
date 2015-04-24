@@ -8,39 +8,62 @@
 #   eAPI configured
 #     Defaults to unix-sockets, if EOS 4.14.5F or newer
  
+# May need this if using pe-puppet
 export PATH=/opt/puppet/bin:${PATH}
  
-BASEDIR=/persist/local/puppet-headless
-#REPO=https://github.com/jerearista/puppet-headless.git
-#REPO=http://10.0.2.2/puppet-headless
-REPO=http://172.16.130.10/puppet-headless
+#
+# Where will we store the local copy?
+#
+BASEDIR=/persist/local
+PUPPETDIR=${BASEDIR}/puppet-headless
+
+#
+# Define the source repo by method
+#
+#GITREPO=https://github.com/jerearista/puppet-headless.git
+RSYNCREPO='vagrant@172.16.130.10:/var/www/html/puppet-headless'
+#WGETREPO=http://172.16.130.10/puppet-headless
  
 if [ "$EUID" -ne 0 ]; then
     echo "Please run as root"
     exit 1
 fi
  
-#cd /mnt/flash/
-#wget http://dl.fedoraproject.org/pub/archive/fedora/linux/releases/14/Everything/i386/os/Packages/git-1.7.3.1-1.fc14.i686.rpm
-#FastCli -p 15 -c << "copy git-1.7.3.1-1.fc14.i686.rpm  extension:
-#extension git-1.7.3.1-1.fc14.i686.rpm
-#copy installed-extensions boot-extensions"
-
-if [[ -x /usr/bin/git ]]; then
-    if [[ ! -d ${BASEDIR} ]]; then
-        git clone ${REPO} ${BASEDIR}
+if [ -x /usr/bin/git -a -n "${GITREPO}" ]; then
+    if [ ! -d ${PUPPETDIR} ]; then
+        git clone ${REPO} ${PUPPETDIR}
     fi 
-    cd ${BASEDIR}
+    cd ${PUPPETDIR}
     git reset --hard HEAD
     git pull
-else
+
+elif [ -x /usr/bin/rsync -a -n "${RSYNCREPO}" ]; then
+    # Must perform the following before this will work:
+    #   ssh-keygen -f ~/.ssh/id_rsa -q -P ""
+    #   ssh-copy-id vagrant@172.16.130.10
+    rsync -az --delete --delete-excluded --exclude '.git' --exclude '*.swp' \
+         -e "ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+         ${RSYNCREPO} ${BASEDIR}
+
+elif [ -x /usr/bin/wget -a -n "${WGETREPO}" ]; then
     
-    if [[ ! -d ${BASEDIR} ]]; then
-        mkdir -p ${BASEDIR}
+    if [ ! -d ${PUPPETDIR} ]; then
+        mkdir -p ${PUPPETDIR}
     fi 
     wget -q --no-host-directories --recursive --mirror \
-         --directory-prefix=${BASEDIR} --cut-dirs=1 ${REPO}
+         --directory-prefix=${PUPPETDIR} --cut-dirs=1 ${REPO}
     # --mirror = -r -N -l inf --no-remove-listing
+
+else
+    echo "Error: I don't know how to get my puppet modules!"
+    exit 1
 fi
 
-puppet apply ${BASEDIR}/manifests/default.pp --modulepath ${BASEDIR}/modules
+puppet apply ${PUPPETDIR}/manifests/default.pp --modulepath ${PUPPETDIR}/modules -t
+
+#
+# To self-add this to the scheduler, uncomment the following
+#
+#FastCli -p 15 -c "configure t
+#schedule puppet interval 30 max-log-files 1 command bash ${PUPPETDIR}/scripts/puppet.sh
+#end"
