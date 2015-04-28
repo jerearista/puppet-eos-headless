@@ -15,7 +15,7 @@ git submodule init
 
 ## Usage
 
-* Edit [scripts/puppet.sh](scripts/puppet.sh) to describe the method of syncing the repository to
+* Edit [scripts/puppet_update.sh](scripts/puppet_update.sh) to describe the method of syncing the repository to
   a switch.
 * Bootstrap the switch(es) with 
   * Basic IP connectivity
