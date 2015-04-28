@@ -24,8 +24,8 @@ git submodule init
     * puppet (requires Ruby)
     * [rbeapi](https://github.com/arista-eosplus/rbeapi)
     * (optional) git, may be installed, if desired
-  * Download [scripts/puppet.sh](scripts/puppet.sh) from this repo to the device
-* Execute `puppet.sh` on the node to download the manifests and run `puppet apply`.
+  * Download [scripts/puppet_update.sh](scripts/puppet_update.sh) from this repo to the device
+* Execute `puppet_update.sh` on the node to download the manifests and run `puppet_apply.sh` or simply use `puppet.sh` to do both.
 
 # License
 
